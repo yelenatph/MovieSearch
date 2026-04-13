@@ -1,4 +1,6 @@
-﻿namespace MovieSearch.Web.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace MovieSearch.Web.Models;
 
 public class MovieDetails : Movie
 {
@@ -15,12 +17,15 @@ public class MovieDetails : Movie
     public string? Awards { get; init; }
     public List<Rating> Ratings { get; init; } = [];
     public string? Metascore { get; init; }
+    [JsonPropertyName("imdbRating")]
     public string? ImdbRating { get; init; }
+    [JsonPropertyName("imdbVotes")]
     public string? ImdbVotes { get; init; }
     public string? DVD { get; init; }
     public string? BoxOffice { get; init; }
     public string? Production { get; init; }
-    public string? Website { get; init; }
+    public string? Response { get; init; }
+    public string? Error { get; init; }
 }
 
 public record Rating(string Source, string Value);
