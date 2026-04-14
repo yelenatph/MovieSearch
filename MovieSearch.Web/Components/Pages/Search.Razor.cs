@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using MovieSearch.Web.Contracts;
 using MovieSearch.Web.Models;
 
 namespace MovieSearch.Web.Components.Pages;
 
-public partial class Home
+public partial class Search
 {
     private string SearchQuery { get; set; } = string.Empty;
 
@@ -16,12 +17,14 @@ public partial class Home
 
     private IReadOnlyList<Movie> Movies { get; set; } = [];
 
+    private PaginationState pagination = new() { ItemsPerPage = 10 };
+
     private readonly IMovieService _movieService;
     private readonly ISearchHistoryRepository _searchHistoryRepository;
     private readonly NavigationManager _navigationManager;
 
 
-    public Home(IMovieService movieService, ISearchHistoryRepository searchHistoryRepository, NavigationManager navigationManager)
+    public Search(IMovieService movieService, ISearchHistoryRepository searchHistoryRepository, NavigationManager navigationManager)
     {
         _movieService = movieService;
         _searchHistoryRepository = searchHistoryRepository;
@@ -42,6 +45,7 @@ public partial class Home
         if (_searchResponse != null && _searchResponse.Error == null)
         {
             Movies = _searchResponse.Search;
+            await pagination.SetCurrentPageIndexAsync(0);
         }
 
         if (_searchResponse?.Error != null)

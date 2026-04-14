@@ -1,0 +1,52 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@rendermode InteractiveServer
+
+<PageTitle>Movie Search</PageTitle>
+
+<div class="movie-page">
+    <div class="movie-container">
+        <h1 class="page-title">Movie Search</h1>
+
+        <div class="search-panel">
+            <div class="search-box">
+                <input class="search-input" placeholder="Enter movie title..."
+                       @bind="SearchQuery" @bind:event="oninput" />
+                <button class="search-btn" @onclick="HandleSearch" disabled="@IsLoading">Search</button>
+            </div>
+
+            <div class="chip-row">
+                @foreach (var query in LatestSearches)
+                {
+                    <button class="chip-btn" @onclick="() => SearchFromHistory(query)">@query</button>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="error-alert">
+                @ErrorMessage
+            </div>
+        }
+        else
+        {
+            @if (Movies.Count > 0)
+            {
+                <div class="grid-shell">
+                    <QuickGrid Items="@Movies.AsQueryable()" Class="movies-grid">
+                        <PropertyColumn Property="m => m.Title" Sortable="true" />
+                        <PropertyColumn Property="m => m.Year" Sortable="true" />
+                        <PropertyColumn Property="m => m.Type" Sortable="true" />
+                        <TemplateColumn Title="">
+                            <button class="details-btn" @onclick="() => OpenDetails(context.ImdbId!)">
+                                Details
+                            </button>
+                        </TemplateColumn>
+                    </QuickGrid>
+                </div>
+            }
+        }
+    </div>
+</div>
