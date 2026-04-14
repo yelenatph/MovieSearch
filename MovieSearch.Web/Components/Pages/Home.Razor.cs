@@ -17,20 +17,20 @@ public partial class Home
     private IReadOnlyList<Movie> Movies { get; set; } = [];
 
     private readonly IMovieService _movieService;
-    private readonly ISearchHistoryService _searchHistoryService;
+    private readonly ISearchHistoryRepository _searchHistoryRepository;
     private readonly NavigationManager _navigationManager;
 
 
-    public Home(IMovieService movieService, ISearchHistoryService searchHistoryService, NavigationManager navigationManager)
+    public Home(IMovieService movieService, ISearchHistoryRepository searchHistoryRepository, NavigationManager navigationManager)
     {
         _movieService = movieService;
-        _searchHistoryService = searchHistoryService;
+        _searchHistoryRepository = searchHistoryRepository;
         _navigationManager = navigationManager;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        LatestSearches = await _searchHistoryService.GetLatestSearchesAsync();
+        await GetSearchHistory();
     }
 
     private async Task HandleSearch()
@@ -39,16 +39,17 @@ public partial class Home
         ErrorMessage = null;
 
         var _searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
-
-        if (_searchResponse.Error == null && _searchResponse.Search.Count > 0)
+        if (_searchResponse != null && _searchResponse.Error == null)
         {
-           Movies = _searchResponse.Search;
+            Movies = _searchResponse.Search;
         }
-        else
+
+        if (_searchResponse?.Error != null)
         {
             ErrorMessage = _searchResponse.Error;
         }
 
+        await GetSearchHistory();
         IsLoading = false;
     }
 
@@ -58,5 +59,10 @@ public partial class Home
     {
         SearchQuery = query;
         await HandleSearch();
+    }
+
+    private async Task GetSearchHistory()
+    {
+        LatestSearches = await _searchHistoryRepository.GetLatestSearchesAsync();
     }
 }

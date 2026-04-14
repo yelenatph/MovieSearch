@@ -9,11 +9,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<SearchHistoryItem>(entity =>
+        modelBuilder.Entity<SearchHistoryItem>(item =>
         {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Query).IsRequired();
-            entity.Property(e => e.LastSearchedAt).IsRequired();
+            item.HasKey(i => i.Id);
+            item.Property(i => i.Query).IsRequired();
+            item.Property(i => i.LastSearchedAt).IsRequired();
         });
     }
 }

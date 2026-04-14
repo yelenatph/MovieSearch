@@ -14,8 +14,6 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options => options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IMovieService, MovieService>();
-        services.AddScoped<ISearchHistoryService, SearchHistoryService>();
-
         services.AddScoped<ISearchHistoryRepository, SearchHistoryRepository>();
 
         services.AddHttpClient<IMovieClient, MovieClient>((sp, client) =>

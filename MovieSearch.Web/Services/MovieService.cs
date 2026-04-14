@@ -3,18 +3,39 @@ using MovieSearch.Web.Models;
 
 namespace MovieSearch.Web.Services
 {
-    public class MovieService(IMovieClient movieClient, ISearchHistoryService searchHistoryService) : IMovieService
+    public class MovieService(IMovieClient movieClient, ISearchHistoryRepository searchHistoryRepository) : IMovieService
     {
-        public async Task<MovieSearchResponse> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
+        public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
         {
-            var result = await movieClient.SearchMoviesByTitleAsync(title, cancellationToken);
-            await searchHistoryService.AddOrUpdateSearchAsync(title, cancellationToken);
-            return result;
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return new MovieSearchResponse { Error = "Title is not provided" };
+            }
+
+            try
+            {
+                var searchResult = await movieClient.SearchMoviesByTitleAsync(title.Trim(), cancellationToken);
+                await searchHistoryRepository.AddOrUpdateSearchAsync(title, cancellationToken);
+                return searchResult;
+
+            }
+            catch (Exception ex)
+            {
+                return new MovieSearchResponse { Error = $"An error occurred while searching for movies: {ex.Message}" };
+            }
         }
 
-        public Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
+        public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
-           return movieClient.GetMovieDetailsAsync(imdbId, cancellationToken);
+            try
+            {
+                return await movieClient.GetMovieDetailsAsync(imdbId, cancellationToken);
+
+            }
+            catch (Exception ex)
+            {
+                return new MovieDetails { Error = $"An error occurred while retrieving movie details: {ex.Message}"};
+            }          
         }
     }
 }

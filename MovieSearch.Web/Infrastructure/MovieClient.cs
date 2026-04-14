@@ -8,36 +8,17 @@ public class MovieClient(HttpClient httpClient, IOptions<OmdbApiServiceSettings>
 {
     private readonly OmdbApiServiceSettings _settings = settings.Value;
 
-    public async Task<MovieSearchResponse> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            return new MovieSearchResponse { Error = "Title is not provided" };
-        }
+        var url = $"?apikey={_settings.ApiKey}&s={Uri.EscapeDataString(title)}";
 
-        var url = $"?apikey={_settings.ApiKey}&s={Uri.EscapeDataString(title.Trim())}";
-
-        MovieSearchResponse? response;
-        try
-        {
-            response = await httpClient.GetFromJsonAsync<MovieSearchResponse>(url, cancellationToken);
-        }
-        catch (Exception)
-        {
-            return new MovieSearchResponse { Error = "Something went wrong"};
-        }
-
-        if (response == null)
-        {
-            return new MovieSearchResponse { Error = "Movie not found" };
-        }
-
-        return response;
+        return  await httpClient.GetFromJsonAsync<MovieSearchResponse>(url, cancellationToken);
     }
 
     public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
     {
-        var movieDeatils = await httpClient.GetFromJsonAsync<MovieDetails>($"?apikey={_settings.ApiKey}&i={Uri.EscapeDataString(imdbId)}", cancellationToken);
-        return movieDeatils;
+        var url = $"?apikey={_settings.ApiKey}&i={Uri.EscapeDataString(imdbId)}";
+
+        return  await httpClient.GetFromJsonAsync<MovieDetails>(url, cancellationToken);
     }
 }
