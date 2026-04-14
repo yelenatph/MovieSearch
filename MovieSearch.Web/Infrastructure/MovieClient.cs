@@ -22,9 +22,9 @@ public class MovieClient(HttpClient httpClient, IOptions<OmdbApiServiceSettings>
         {
             response = await httpClient.GetFromJsonAsync<MovieSearchResponse>(url, cancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return new MovieSearchResponse { Error = ex.Message };
+            return new MovieSearchResponse { Error = "Something went wrong"};
         }
 
         if (response == null)
@@ -35,8 +35,9 @@ public class MovieClient(HttpClient httpClient, IOptions<OmdbApiServiceSettings>
         return response;
     }
 
-    public Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
+    public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var movieDeatils = await httpClient.GetFromJsonAsync<MovieDetails>($"?apikey={_settings.ApiKey}&i={Uri.EscapeDataString(imdbId)}", cancellationToken);
+        return movieDeatils;
     }
 }
