@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using MovieSearch.Web.Contracts;
-using MovieSearch.Web.Infrastructure;
+﻿using MovieSearch.Web.Contracts;
 using MovieSearch.Web.Models;
 
 namespace MovieSearch.Web.Services
@@ -14,7 +12,7 @@ namespace MovieSearch.Web.Services
 
         public Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+           return movieClient.GetMovieDetailsAsync(imdbId, cancellationToken);
         }
     }
 }

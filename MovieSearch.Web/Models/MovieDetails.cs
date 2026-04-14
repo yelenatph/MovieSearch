@@ -24,6 +24,7 @@ public class MovieDetails : Movie
     public string? DVD { get; init; }
     public string? BoxOffice { get; init; }
     public string? Production { get; init; }
+    public string? Website { get; init; }
     public string? Response { get; init; }
     public string? Error { get; init; }
 }
