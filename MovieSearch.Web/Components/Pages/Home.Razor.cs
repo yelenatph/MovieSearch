@@ -6,28 +6,22 @@ namespace MovieSearch.Web.Components.Pages;
 
 public partial class Home
 {
-    public string SearchQuery { get; set; } = string.Empty;
+    private string SearchQuery { get; set; } = string.Empty;
 
     private bool IsLoading { get; set; }
 
     private string? ErrorMessage { get; set; }
 
-    private MovieSearchResponse? SearchResponse { get; set; }
-
-    private List<Movie> Movies;
-
-    [Inject]
-    public NavigationManager NavigationManager { get; set; }
+    private IReadOnlyList<Movie> Movies { get; set; } = [];
 
     private readonly IMovieService _movieService;
+    private readonly NavigationManager NavigationManager;
 
-    public Home(IMovieService movieService)
+
+    public Home(IMovieService movieService, NavigationManager navigationManager)
     {
         _movieService = movieService;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
+        NavigationManager = navigationManager;
     }
 
     private async Task HandleSearch()
@@ -35,15 +29,15 @@ public partial class Home
         IsLoading = true;
         ErrorMessage = null;
 
-        SearchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
+        var _searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
 
-        if (SearchResponse.Error == null && SearchResponse.Search.Count > 0)
+        if (_searchResponse.Error == null && _searchResponse.Search.Count > 0)
         {
-           Movies = SearchResponse.Search;
+           Movies = _searchResponse.Search;
         }
         else
         {
-            ErrorMessage = SearchResponse.Error;
+            ErrorMessage = _searchResponse.Error;
         }
 
         IsLoading = false;
