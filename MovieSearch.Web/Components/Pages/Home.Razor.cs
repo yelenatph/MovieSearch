@@ -12,16 +12,25 @@ public partial class Home
 
     private string? ErrorMessage { get; set; }
 
+    private IReadOnlyList<string> LatestSearches { get; set; } = [];
+
     private IReadOnlyList<Movie> Movies { get; set; } = [];
 
     private readonly IMovieService _movieService;
-    private readonly NavigationManager NavigationManager;
+    private readonly ISearchHistoryService _searchHistoryService;
+    private readonly NavigationManager _navigationManager;
 
 
-    public Home(IMovieService movieService, NavigationManager navigationManager)
+    public Home(IMovieService movieService, ISearchHistoryService searchHistoryService, NavigationManager navigationManager)
     {
         _movieService = movieService;
-        NavigationManager = navigationManager;
+        _searchHistoryService = searchHistoryService;
+        _navigationManager = navigationManager;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        LatestSearches = await _searchHistoryService.GetLatestSearchesAsync();
     }
 
     private async Task HandleSearch()
@@ -43,5 +52,11 @@ public partial class Home
         IsLoading = false;
     }
 
-    private void OpenDetails(string imdbId) => NavigationManager.NavigateTo($"/movie/{imdbId}");
+    private void OpenDetails(string imdbId) => _navigationManager.NavigateTo($"/movie/{imdbId}");
+
+    private async Task SearchFromHistory(string query)
+    {
+        SearchQuery = query;
+        await HandleSearch();
+    }
 }
