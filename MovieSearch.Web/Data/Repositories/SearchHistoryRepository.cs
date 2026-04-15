@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieSearch.Web.Contracts;
-using MovieSearch.Web.Models;
+using MovieSearch.Web.Models.Domain;
 
 namespace MovieSearch.Web.Data.Repositories;
 

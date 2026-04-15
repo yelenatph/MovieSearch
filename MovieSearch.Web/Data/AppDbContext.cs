@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MovieSearch.Web.Models;
+using MovieSearch.Web.Models.Domain;
 
 namespace MovieSearch.Web.Data;
 

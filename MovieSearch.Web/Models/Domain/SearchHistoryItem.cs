@@ -1,4 +1,4 @@
-﻿namespace MovieSearch.Web.Models;
+﻿namespace MovieSearch.Web.Models.Domain;
 
 public class SearchHistoryItem
 {
