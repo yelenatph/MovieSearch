@@ -27,6 +27,11 @@ namespace MovieSearch.Web.Services
 
         public async Task<MovieDetails?> GetMovieDetailsAsync(string imdbId, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(imdbId))
+            {
+                return new MovieDetails { Error = "IMDB ID is not provided" };
+            }
+
             try
             {
                 return await movieClient.GetMovieDetailsAsync(imdbId, cancellationToken);
