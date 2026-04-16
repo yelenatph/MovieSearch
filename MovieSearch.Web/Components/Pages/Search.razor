@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using MovieSearch.Web.Models
 
 @rendermode InteractiveServer
 
@@ -32,10 +33,10 @@
         }
         else
         {
-            @if (HasSearched && TotalMovieCount > 0)
+            @if (HasSearched && !string.IsNullOrWhiteSpace(SearchQuery))
             {
                 <div class="grid-shell">
-                    <QuickGrid ItemsProvider="movieProvider" Pagination="@pagination" Class="movies-grid">
+                    <QuickGrid TGridItem="Movie" Items="@MoviesQueryable" Class="movies-grid">
                         <PropertyColumn Property="m => m.Title" Sortable="true" />
                         <PropertyColumn Property="m => m.Year" Sortable="true" />
                         <PropertyColumn Property="m => m.Type" Sortable="true" />
@@ -50,7 +51,7 @@
                                 aria-label="Previous page">
                             &#8592;
                         </button>
-                        <span class="pager-info">Page @(CurrentPage + 1) of @TotalPages</span>
+                        <span class="pager-info">Page @CurrentPage of @TotalPages</span>
                         <button class="pager-btn"
                                 @onclick="GoToNextPageAsync"
                                 disabled="@(!CanGoToNextPage)"
