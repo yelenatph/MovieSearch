@@ -67,7 +67,7 @@ public class MovieServiceTests
             Search = [new Movie { ImdbId = "tt0120338", Title = "Titanic", Year = "1997", Type = "movie" }]
         };
 
-        _movieClientMock.Setup(client => client.SearchMoviesByTitleAsync(It.Is<string>(t => t == title), It.IsAny<CancellationToken>()))
+        _movieClientMock.Setup(client => client.SearchMoviesByTitleAsync(It.Is<string>(t => t == title), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResponse);
 
         // Act
@@ -84,7 +84,7 @@ public class MovieServiceTests
         // Arrange
         var title = "Titanic";
 
-        _movieClientMock.Setup(client => client.SearchMoviesByTitleAsync(It.Is<string>(t => t == title), It.IsAny<CancellationToken>()))
+        _movieClientMock.Setup(client => client.SearchMoviesByTitleAsync(It.Is<string>(t => t == title), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("boom"));
 
         // Act

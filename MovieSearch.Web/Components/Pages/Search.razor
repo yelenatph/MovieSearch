@@ -32,10 +32,10 @@
         }
         else
         {
-            @if (Movies.Count > 0)
+            @if (HasSearched && TotalMovieCount > 0)
             {
                 <div class="grid-shell">
-                    <QuickGrid Items="@Movies.AsQueryable()" Class="movies-grid">
+                    <QuickGrid ItemsProvider="movieProvider" Pagination="@pagination" Class="movies-grid">
                         <PropertyColumn Property="m => m.Title" Sortable="true" />
                         <PropertyColumn Property="m => m.Year" Sortable="true" />
                         <PropertyColumn Property="m => m.Type" Sortable="true" />
@@ -45,6 +45,21 @@
                             </button>
                         </TemplateColumn>
                     </QuickGrid>
+                    <div class="pager-controls">
+                        <button class="pager-btn"
+                                @onclick="GoToPreviousPageAsync"
+                                disabled="@(!CanGoToPreviousPage)"
+                                aria-label="Previous page">
+                            &#8592;
+                        </button>
+                        <span class="pager-info">Page @(CurrentPage + 1) of @TotalPages</span>
+                        <button class="pager-btn"
+                                @onclick="GoToNextPageAsync"
+                                disabled="@(!CanGoToNextPage)"
+                                aria-label="Next page">
+                            &#8594;
+                        </button>
+                    </div>
                 </div>
             }
         }

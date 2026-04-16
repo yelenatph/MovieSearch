@@ -5,7 +5,7 @@ namespace MovieSearch.Web.Services
 {
     public class MovieService(IMovieClient movieClient, ISearchHistoryRepository searchHistoryRepository) : IMovieService
     {
-        public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
+        public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, int pageNumber = 1, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -14,7 +14,7 @@ namespace MovieSearch.Web.Services
 
             try
             {
-                var searchResult = await movieClient.SearchMoviesByTitleAsync(title.Trim(), cancellationToken);
+                var searchResult = await movieClient.SearchMoviesByTitleAsync(title.Trim(), pageNumber, cancellationToken);
                 await searchHistoryRepository.AddOrUpdateSearchAsync(title, cancellationToken);
                 return searchResult;
 

@@ -7,17 +7,31 @@ namespace MovieSearch.Web.Components.Pages;
 
 public partial class Search
 {
+    private const int PageSize = 10;
+
     private string SearchQuery { get; set; } = string.Empty;
 
     private bool IsLoading { get; set; }
 
     private string? ErrorMessage { get; set; }
 
+    private bool HasSearched { get; set; }
+
     private IReadOnlyList<string> LatestSearches { get; set; } = [];
 
-    private IReadOnlyList<Movie> Movies { get; set; } = [];
+    private PaginationState pagination = new() { ItemsPerPage = PageSize };
 
-    private PaginationState pagination = new() { ItemsPerPage = 10 };
+    private GridItemsProvider<Movie> movieProvider = default!;
+
+    private int TotalMovieCount;
+
+    private int CurrentPage => pagination.CurrentPageIndex;
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalMovieCount / (double)PageSize));
+
+    private bool CanGoToPreviousPage => CurrentPage > 0;
+
+    private bool CanGoToNextPage => CurrentPage < TotalPages - 1;
 
     private readonly IMovieService _movieService;
     private readonly ISearchHistoryRepository _searchHistoryRepository;
@@ -33,28 +47,29 @@ public partial class Search
 
     protected override async Task OnInitializedAsync()
     {
+        movieProvider = LoadMoviesAsync;
         await GetSearchHistory();
     }
 
     private async Task HandleSearch()
     {
-        IsLoading = true;
+        HasSearched = true;
         ErrorMessage = null;
+        TotalMovieCount = 0;
 
-        var _searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
-        if (_searchResponse != null && _searchResponse.Error == null)
+        var searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
+        if (searchResponse != null && searchResponse.Error == null)
         {
-            Movies = _searchResponse.Search;
-            await pagination.SetCurrentPageIndexAsync(0);
+           TotalMovieCount = int.TryParse(searchResponse.TotalResults, out var total) ? total : searchResponse.Search.Count;
+           await pagination.SetCurrentPageIndexAsync(0);
         }
 
-        if (_searchResponse?.Error != null)
+        if (searchResponse?.Error != null)
         {
-            ErrorMessage = _searchResponse.Error;
+            ErrorMessage = searchResponse.Error;
         }
 
         await GetSearchHistory();
-        IsLoading = false;
     }
 
     private void OpenDetails(string imdbId) => _navigationManager.NavigateTo($"/movie/{imdbId}");
@@ -68,5 +83,63 @@ public partial class Search
     private async Task GetSearchHistory()
     {
         LatestSearches = await _searchHistoryRepository.GetLatestSearchesAsync();
+    }
+
+    private async Task GoToPreviousPageAsync()
+    {
+        if (!CanGoToPreviousPage)
+        {
+            return;
+        }
+
+        await pagination.SetCurrentPageIndexAsync(CurrentPage - 1);
+    }
+
+    private async Task GoToNextPageAsync()
+    {
+        if (!CanGoToNextPage)
+        {
+            return;
+        }
+
+        await pagination.SetCurrentPageIndexAsync(CurrentPage + 1);
+    }
+
+    private async ValueTask<GridItemsProviderResult<Movie>> LoadMoviesAsync(GridItemsProviderRequest<Movie> request)
+    {
+        if (!HasSearched || string.IsNullOrWhiteSpace(SearchQuery))
+        {
+            return GridItemsProviderResult.From(Array.Empty<Movie>(), 0);
+        }
+
+        IsLoading = true;
+        try
+        {
+            var pageSize = request.Count ?? PageSize;
+            var pageNumber = (request.StartIndex / pageSize) + 1;
+            var searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery, pageNumber);
+
+            if (searchResponse is null)
+            {
+                ErrorMessage = "An unexpected error occurred while searching for movies.";
+                TotalMovieCount = 0;
+                return GridItemsProviderResult.From(Array.Empty<Movie>(), 0);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchResponse.Error))
+            {
+                ErrorMessage = searchResponse.Error;
+                TotalMovieCount = 0;
+                return GridItemsProviderResult.From(Array.Empty<Movie>(), 0);
+            }
+
+            ErrorMessage = null;
+            TotalMovieCount = int.TryParse(searchResponse.TotalResults, out var total) ? total : searchResponse.Search.Count;
+            return GridItemsProviderResult.From(searchResponse.Search, TotalMovieCount);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }

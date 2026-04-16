@@ -8,9 +8,9 @@ public class MovieClient(HttpClient httpClient, IOptions<OmdbApiServiceSettings>
 {
     private readonly OmdbApiServiceSettings _settings = settings.Value;
 
-    public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async Task<MovieSearchResponse?> SearchMoviesByTitleAsync(string title, int pageNumber = 1, CancellationToken cancellationToken = default)
     {
-        var url = $"?apikey={_settings.ApiKey}&s={Uri.EscapeDataString(title)}";
+        var url = $"?apikey={_settings.ApiKey}&s={Uri.EscapeDataString(title)}&page={pageNumber}";
 
         return  await httpClient.GetFromJsonAsync<MovieSearchResponse>(url, cancellationToken);
     }

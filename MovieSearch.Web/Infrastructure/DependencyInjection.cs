@@ -19,7 +19,7 @@ public static class DependencyInjection
         services.AddHttpClient<IMovieClient, MovieClient>((sp, client) =>
         {
             var serviceSettings = configuration.GetSection(nameof(OmdbApiServiceSettings)).Get<OmdbApiServiceSettings>();
-            client.BaseAddress = new Uri(serviceSettings?.BaseUrl ?? "https://www.omdbapi.com/");
+            client.BaseAddress = new Uri(serviceSettings?.BaseUrl ?? throw new ArgumentNullException("BaseUrl is not configured"));
         });
 
         return services;
