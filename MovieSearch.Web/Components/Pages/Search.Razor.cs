@@ -35,14 +35,11 @@ public partial class Search
 
     private readonly IMovieService _movieService;
     private readonly ISearchHistoryRepository _searchHistoryRepository;
-    private readonly NavigationManager _navigationManager;
 
-
-    public Search(IMovieService movieService, ISearchHistoryRepository searchHistoryRepository, NavigationManager navigationManager)
+    public Search(IMovieService movieService, ISearchHistoryRepository searchHistoryRepository)
     {
         _movieService = movieService;
         _searchHistoryRepository = searchHistoryRepository;
-        _navigationManager = navigationManager;
     }
 
     protected override async Task OnInitializedAsync()
@@ -60,8 +57,8 @@ public partial class Search
         var searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery);
         if (searchResponse != null && searchResponse.Error == null)
         {
-           TotalMovieCount = int.TryParse(searchResponse.TotalResults, out var total) ? total : searchResponse.Search.Count;
-           await pagination.SetCurrentPageIndexAsync(0);
+            TotalMovieCount = int.TryParse(searchResponse.TotalResults, out var total) ? total : searchResponse.Search.Count;
+            await pagination.SetCurrentPageIndexAsync(0);
         }
 
         if (searchResponse?.Error != null)
@@ -71,8 +68,6 @@ public partial class Search
 
         await GetSearchHistory();
     }
-
-    private void OpenDetails(string imdbId) => _navigationManager.NavigateTo($"/movie/{imdbId}");
 
     private async Task SearchFromHistory(string query)
     {

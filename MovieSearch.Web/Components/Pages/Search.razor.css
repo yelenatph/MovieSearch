@@ -94,19 +94,28 @@
     table-layout: fixed;
 }
 
-    /* Header */
+    /* Header spans full width of .grid-shell (wrapper padding removed) */
     ::deep .movies-grid thead th {
         background: #f1f5f9;
         color: #0f172a;
         font-weight: 600;
         text-align: left;
-        padding: .85rem .9rem;
+        padding: .9rem 1rem;
         border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    ::deep .movies-grid thead th:nth-child(1) {
+        border-top-left-radius: 13px;
+    }
+
+    ::deep .movies-grid thead th:nth-child(4) {
+        border-top-right-radius: 13px;
     }
 
     /* Body */
     ::deep .movies-grid tbody td {
-        padding: .8rem .9rem;
+        padding: .75rem 1rem;
         border-bottom: 1px solid #e2e8f0;
         color: #334155;
         vertical-align: middle;
@@ -120,9 +129,16 @@
         background: #eff6ff;
     }
 
+    /* Consistent vertical dividers (header + body align) */
+    ::deep .movies-grid thead th:not(:first-child),
+    ::deep .movies-grid tbody td:not(:first-child) {
+        border-left: 1px solid #e2e8f0;
+    }
+
     ::deep .movies-grid th:nth-child(1),
     ::deep .movies-grid td:nth-child(1) {
-        width: 58%;
+        width: 48%;
+        max-width: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -130,19 +146,22 @@
 
     ::deep .movies-grid th:nth-child(2),
     ::deep .movies-grid td:nth-child(2) {
-        width: 12%;
+        width: 11%;
+        text-align: center;
     }
 
     ::deep .movies-grid th:nth-child(3),
     ::deep .movies-grid td:nth-child(3) {
-        width: 14%;
+        width: 13%;
+        text-align: center;
         text-transform: capitalize;
     }
 
     ::deep .movies-grid th:nth-child(4),
     ::deep .movies-grid td:nth-child(4) {
-        width: 16%;
-        text-align: right;
+        width: 28%;
+        min-width: 7.5rem;
+        text-align: center;
     }
 
     /* QuickGrid may render a trailing filler column; hide it to remove empty right-side space */
@@ -238,16 +257,34 @@
     font-weight: 500;
 }
 
-.details-btn {
-    padding: .35rem .65rem;
+::deep .details-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 2px 0;
+    padding: .45rem 1rem;
     border-radius: 8px;
     border: 1px solid #93c5fd;
     background: #eff6ff;
     color: #1d4ed8;
     cursor: pointer;
     font-weight: 600;
+    font-size: .875rem;
+    line-height: 1.25;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
 
-.details-btn:hover {
+::deep .details-btn:hover {
     background: #dbeafe;
+    border-color: #60a5fa;
+    color: #1e40af;
+}
+
+::deep .details-btn:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }

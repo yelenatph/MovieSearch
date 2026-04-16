@@ -40,9 +40,7 @@
                         <PropertyColumn Property="m => m.Year" Sortable="true" />
                         <PropertyColumn Property="m => m.Type" Sortable="true" />
                         <TemplateColumn Title="">
-                            <button class="details-btn" @onclick="() => OpenDetails(context.ImdbId!)">
-                                Details
-                            </button>
+                            <a class="details-btn" href="@($"/movie/{context.ImdbId}")">Details</a>
                         </TemplateColumn>
                     </QuickGrid>
                     <div class="pager-controls">
