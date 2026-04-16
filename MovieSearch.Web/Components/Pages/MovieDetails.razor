@@ -1,5 +1,5 @@
 ﻿@page "/movie/{ImdbId}"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Movie Details</PageTitle>
 
