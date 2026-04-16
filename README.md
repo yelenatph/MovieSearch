@@ -8,11 +8,11 @@ The UI is built with **Blazor** in **.NET 10**, using **interactive server** ren
 
 ## Prerequisites
 
-- [.NET SDK 10.0](https://dotnet.microsoft.com/download) or newer (matching the `net10.0` target in `MovieSearch.Web`)
+- [.NET SDK 10.0](https://dotnet.microsoft.com/download)
 
 ## How to run locally
 
-1. **Clone or open** this repository (https://github.com/yelenatph/MovieSearch) and go to the folder that contains `MovieSearch.Web` (this document assumes the `MovieSearch` project root).
+1. **Clone or open** this repository and go to the folder that contains `MovieSearch.Web` (this document assumes the `MovieSearch` project root).
 
 2. **Configure the OMDb API key** (required for live searches):
 
