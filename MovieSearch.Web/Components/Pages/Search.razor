@@ -11,11 +11,11 @@
         <h1 class="page-title">Movie Search</h1>
 
         <div class="search-panel">
-            <div class="search-box">
+            <form class="search-box" @onsubmit="HandleSearch" @onsubmit:preventDefault>
                 <input class="search-input" placeholder="Enter movie title..."
                        @bind="SearchQuery" @bind:event="oninput" />
-                <button class="search-btn" @onclick="HandleSearch" disabled="@IsLoading">Search</button>
-            </div>
+                <button type="submit" class="search-btn" disabled="@IsLoading">Search</button>
+            </form>
 
             <div class="chip-row">
                 @foreach (var query in LatestSearches)
@@ -25,17 +25,15 @@
             </div>
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage) && IsSearchInputInSync)
         {
             <div class="error-alert">
                 @ErrorMessage
             </div>
         }
-        else
+        else if (IsSearchInputInSync)
         {
-            @if (HasSearched && !string.IsNullOrWhiteSpace(SearchQuery))
-            {
-                <div class="grid-shell">
+            <div class="grid-shell">
                     <QuickGrid TGridItem="Movie" Items="@MoviesQueryable" Class="movies-grid">
                         <PropertyColumn Property="m => m.Title" Sortable="true" />
                         <PropertyColumn Property="m => m.Year" Sortable="true" />
@@ -60,7 +58,6 @@
                         </button>
                     </div>
                 </div>
-            }
         }
     </div>
 </div>

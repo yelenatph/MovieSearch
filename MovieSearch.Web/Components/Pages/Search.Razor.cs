@@ -12,9 +12,7 @@ public partial class Search
     private bool IsLoading { get; set; }
 
     private string? ErrorMessage { get; set; }
-
-    private bool HasSearched { get; set; }
-
+    
     private IReadOnlyList<string> LatestSearches { get; set; } = [];
 
     private IReadOnlyList<Movie> Movies { get; set; } = [];
@@ -33,6 +31,10 @@ public partial class Search
 
     private int _totalMovieCount;
 
+    private bool _hasSearched;   
+
+    private string _committedSearchQuery = string.Empty;
+
     private readonly IMovieService _movieService;
     private readonly ISearchHistoryRepository _searchHistoryRepository;
 
@@ -49,8 +51,15 @@ public partial class Search
 
     private async Task HandleSearch()
     {
-        HasSearched = true;
+        _committedSearchQuery = SearchQuery.Trim();
+        if (string.IsNullOrWhiteSpace(_committedSearchQuery))
+        {
+            return;
+        }
+
+        _hasSearched = true;
         ErrorMessage = null;
+       
         _totalMovieCount = 0;
         _pageNumber = 1;
         Movies = [];
@@ -92,17 +101,17 @@ public partial class Search
         await LoadMovieAsync();
     }
 
+    private bool IsSearchInputInSync =>
+        _hasSearched &&
+        !string.IsNullOrWhiteSpace(_committedSearchQuery) &&
+        string.Equals(SearchQuery.Trim(), _committedSearchQuery, StringComparison.OrdinalIgnoreCase);
+
     private async Task LoadMovieAsync()
     {
-        if (!HasSearched || string.IsNullOrWhiteSpace(SearchQuery))
-        {
-            return;
-        }
-
         IsLoading = true;
         try
         {
-            var searchResponse = await _movieService.SearchMoviesByTitleAsync(SearchQuery, _pageNumber);
+            var searchResponse = await _movieService.SearchMoviesByTitleAsync(_committedSearchQuery, _pageNumber);
 
             if (searchResponse is null)
             {
